@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 
-from app.model import Expense
+from model.tracker_model import Expense
 
 app = FastAPI()
 
