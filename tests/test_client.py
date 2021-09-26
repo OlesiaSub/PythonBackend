@@ -1,4 +1,3 @@
-import pytest
 from fastapi.testclient import TestClient
 
 from main import app
@@ -14,7 +13,7 @@ def test_valid_expense():
                           "date": "2021-09-26T07:38:59.388Z",
                           "category": "cat",
                           "description": "description",
-                          "id": 3
+                          "expense_id": 3
                       })
     assert res.status_code == 200
 
@@ -27,10 +26,10 @@ def test_invalid_id():
                           "date": "2021-09-26T07:38:59.388Z",
                           "category": "cat",
                           "description": "description",
-                          "id": -2
+                          "expense_id": -2
                       })
     assert res.status_code == 400
-    assert res.json() == {"detail": "ID is invalid, must be >= 0"}
+    assert res.json() == {"detail": "Id is invalid, must be >= 0"}
 
 
 def test_invalid_lowercase_name():
@@ -41,7 +40,7 @@ def test_invalid_lowercase_name():
                           "date": "2021-09-26T07:38:59.388Z",
                           "category": "cat",
                           "description": "description",
-                          "id": 0
+                          "expense_id": 0
                       })
     assert res.status_code == 400
     assert res.json() == {"detail": "Name must start with capital, must not be empty or numeric"}
@@ -55,7 +54,7 @@ def test_invalid_numeric_name():
                           "date": "2021-09-26T07:38:59.388Z",
                           "category": "cat",
                           "description": "description",
-                          "id": 1
+                          "expense_id": 1
                       })
     assert res.status_code == 400
     assert res.json() == {"detail": "Name must start with capital, must not be empty or numeric"}
@@ -69,7 +68,7 @@ def test_invalid_empty_name():
                           "date": "2021-09-26T07:38:59.388Z",
                           "category": "cat",
                           "description": "description",
-                          "id": 0
+                          "expense_id": 0
                       })
     assert res.status_code == 400
     assert res.json() == {"detail": "Name must start with capital, must not be empty or numeric"}
@@ -83,10 +82,10 @@ def test_invalid_is_before_invalid_name():
                           "date": "2021-09-26T07:38:59.388Z",
                           "category": "cat",
                           "description": "description",
-                          "id": -2
+                          "expense_id": -2
                       })
     assert res.status_code == 400
-    assert res.json() == {"detail": "ID is invalid, must be >= 0"}
+    assert res.json() == {"detail": "Id is invalid, must be >= 0"}
 
 
 def test_item_already_exists():
@@ -97,7 +96,7 @@ def test_item_already_exists():
                     "date": "2021-09-26T07:38:59.388Z",
                     "category": "cat",
                     "description": "description",
-                    "id": 2
+                    "expense_id": 2
                 })
     res = client.post("expenses/",
                       json={
@@ -106,7 +105,7 @@ def test_item_already_exists():
                           "date": "2021-09-26T07:38:59.388Z",
                           "category": "cat",
                           "description": "description",
-                          "id": 2
+                          "expense_id": 2
                       })
     assert res.status_code == 400
     assert res.json() == {"detail": "This id already exists"}

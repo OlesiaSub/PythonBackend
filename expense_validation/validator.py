@@ -13,7 +13,7 @@ def check_available_storage(expense_id: int):
 
 def validate_id(track_id: int):
     if track_id < 0:
-        raise HTTPException(status_code=400, detail="ID is invalid, must be >= 0")
+        raise HTTPException(status_code=400, detail="Id is invalid, must be >= 0")
     else:
         return True
 

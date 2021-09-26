@@ -11,8 +11,8 @@ router = APIRouter()
 async def get_expense_id(expense_id):
     validate_id(expense_id)
     if not storage.check_presence(expense_id):
-        raise HTTPException(status_code=400, detail="There is no such id in storage")
-    return {storage.expense_storage[expense_id]}
+        raise HTTPException(status_code=400, detail="This id is not present in the storage.")
+    return storage.expense_storage[expense_id]
 
 
 @router.post("/expenses/")
