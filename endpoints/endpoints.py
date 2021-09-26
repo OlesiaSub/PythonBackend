@@ -9,10 +9,11 @@ router = APIRouter()
 
 @router.get("/expenses_tracker/{expense_id}")
 async def get_expense_id(expense_id):
-    validate_id(expense_id)
-    if not storage.check_presence(expense_id):
+    id_int = int(expense_id)
+    validate_id(id_int)
+    if not storage.check_presence(id_int):
         raise HTTPException(status_code=400, detail="This id is not present in the storage.")
-    return storage.expense_storage[expense_id]
+    return storage.expense_storage[id_int]
 
 
 @router.post("/expenses/")

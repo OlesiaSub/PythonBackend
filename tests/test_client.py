@@ -1,5 +1,8 @@
 from fastapi.testclient import TestClient
 
+from model.tracker_model import Expense
+from endpoints import endpoints
+from storage import storage
 from main import app
 
 client = TestClient(app)
@@ -16,6 +19,7 @@ def test_valid_expense():
                           "expense_id": 3
                       })
     assert res.status_code == 200
+    assert len(storage.expense_storage) == 1
 
 
 def test_invalid_id():
@@ -30,6 +34,7 @@ def test_invalid_id():
                       })
     assert res.status_code == 400
     assert res.json() == {"detail": "Id is invalid, must be >= 0"}
+    assert len(storage.expense_storage) == 0
 
 
 def test_invalid_lowercase_name():
@@ -44,6 +49,7 @@ def test_invalid_lowercase_name():
                       })
     assert res.status_code == 400
     assert res.json() == {"detail": "Name must start with capital, must not be empty or numeric"}
+    assert len(storage.expense_storage) == 0
 
 
 def test_invalid_numeric_name():
@@ -58,6 +64,7 @@ def test_invalid_numeric_name():
                       })
     assert res.status_code == 400
     assert res.json() == {"detail": "Name must start with capital, must not be empty or numeric"}
+    assert len(storage.expense_storage) == 0
 
 
 def test_invalid_empty_name():
@@ -72,6 +79,7 @@ def test_invalid_empty_name():
                       })
     assert res.status_code == 400
     assert res.json() == {"detail": "Name must start with capital, must not be empty or numeric"}
+    assert len(storage.expense_storage) == 0
 
 
 def test_invalid_is_before_invalid_name():
@@ -86,6 +94,7 @@ def test_invalid_is_before_invalid_name():
                       })
     assert res.status_code == 400
     assert res.json() == {"detail": "Id is invalid, must be >= 0"}
+    assert len(storage.expense_storage) == 0
 
 
 def test_item_already_exists():
@@ -98,6 +107,7 @@ def test_item_already_exists():
                     "description": "description",
                     "expense_id": 2
                 })
+    assert len(storage.expense_storage) == 1
     res = client.post("expenses/",
                       json={
                           "name": "Polina",
@@ -109,3 +119,99 @@ def test_item_already_exists():
                       })
     assert res.status_code == 400
     assert res.json() == {"detail": "This id already exists"}
+    assert len(storage.expense_storage) == 1
+
+
+def test_get_item():
+    client.post("expenses/",
+                json={
+                    "name": "Expense1",
+                    "expenditure": 100,
+                    "date": "2021-09-27T01:25:53.857135",
+                    "category": "cat",
+                    "description": "desc",
+                    "expense_id": 1
+                })
+    res = client.get("/expenses_tracker/1")
+    assert res.status_code == 200
+    assert len(storage.expense_storage) == 1
+
+
+def test_get_item_fails():
+    client.post("expenses/",
+                json={
+                    "name": "Expense1",
+                    "expenditure": 100,
+                    "date": "2021-09-27T01:25:53.857135",
+                    "category": "cat",
+                    "description": "desc",
+                    "expense_id": -2
+                })
+    item_fst = Expense(name="Expense1", expenditure=100, date="2021-09-27T01:25:53.857135",
+                       description="desc", category="cat", expense_id=1)
+    res = client.get("/expenses_tracker/1")
+    assert res.status_code == 400
+
+
+def test_add_multiple_queries():
+    for i in range(0, 50):
+        client.post("expenses/",
+                    json={
+                        "name": "Expense1",
+                        "expenditure": 100,
+                        "date": "2021-09-27T01:25:53.857135",
+                        "category": "cat",
+                        "description": "desc",
+                        "expense_id": i
+                    })
+    assert len(storage.expense_storage) == 50
+
+
+def test_add_and_get_multiple_queries():
+    for i in range(0, 50):
+        client.post("expenses/",
+                    json={
+                        "name": "Expense1",
+                        "expenditure": 100,
+                        "date": "2021-09-27T01:25:53.857135",
+                        "category": "cat",
+                        "description": "desc",
+                        "expense_id": i
+                    })
+    for i in range(0, 50):
+        res = client.get("/expenses_tracker/" + str(i))
+        assert res.status_code == 200
+
+
+def test_add_with_bad_ids():
+    for i in range(-10, 50):
+        client.post("expenses/",
+                    json={
+                        "name": "Expense1",
+                        "expenditure": 100,
+                        "date": "2021-09-27T01:25:53.857135",
+                        "category": "cat",
+                        "description": "desc",
+                        "expense_id": i
+                    })
+    assert len(storage.expense_storage) == 50
+
+
+def test_add_and_get_with_wrong_ids():
+    for i in range(-10, 50):
+        client.post("expenses/",
+                    json={
+                        "name": "Expense1",
+                        "expenditure": 100,
+                        "date": "2021-09-27T01:25:53.857135",
+                        "category": "cat",
+                        "description": "desc",
+                        "expense_id": i
+                    })
+    for i in range(-10, 0):
+        res = client.get("/expenses_tracker/" + str(i))
+        assert res.status_code == 400
+
+    for i in range(0, 50):
+        res = client.get("/expenses_tracker/" + str(i))
+        assert res.status_code == 200
