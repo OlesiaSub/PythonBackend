@@ -1,4 +1,4 @@
-from model.tracker_model import Expense
+from app.model.tracker_model import Expense
 
 expense_storage = {}
 

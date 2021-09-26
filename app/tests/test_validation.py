@@ -1,6 +1,6 @@
 import pytest
-from app.expense_validation import validator
-from app.storage import storage
+from expense_validation import validator
+from storage import storage
 from model.tracker_model import Expense
 
 
