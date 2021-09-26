@@ -10,3 +10,4 @@ class Expense(BaseModel):
     date: datetime
     category: str
     description: Optional[str] = None
+    id: int
