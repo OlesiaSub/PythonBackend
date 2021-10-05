@@ -9,7 +9,7 @@ def process_get(expense_id: int):
     id_int = int(expense_id)
     validate_id(id_int)
     if not storage.check_presence(id_int):
-        raise HTTPException(status_code=400, detail="This id is not present in the storage.")
+        raise HTTPException(status_code=400, detail="This ID is not present in the storage.")
     return storage.expense_storage[id_int]
 
 
