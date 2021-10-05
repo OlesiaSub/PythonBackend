@@ -1,9 +1,8 @@
 from fastapi.testclient import TestClient
 
-from model.tracker_model import Expense
-from endpoints import endpoints
-from storage import storage
 from main import app
+from model.tracker_model import Expense
+from storage import storage
 
 client = TestClient(app)
 
@@ -147,8 +146,6 @@ def test_get_item_fails():
                     "description": "desc",
                     "expense_id": -2
                 })
-    item_fst = Expense(name="Expense1", expenditure=100, date="2021-09-27T01:25:53.857135",
-                       description="desc", category="cat", expense_id=1)
     res = client.get("/expenses_tracker/1")
     assert res.status_code == 400
 
