@@ -3,7 +3,11 @@ from graphene import String, ObjectType, List, Schema, Field
 from graphql.execution.executors.asyncio import AsyncioExecutor
 from starlette.graphql import GraphQLApp
 
+from database import db_models, database
 from endpoints.endpoints import router
+
+
+db_models.Base.metadata.create_all(bind=database.engine)
 
 app = FastAPI()
 

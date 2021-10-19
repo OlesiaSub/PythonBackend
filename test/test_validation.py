@@ -1,7 +1,5 @@
 import pytest
 from expense_validation import validator
-from storage import storage
-from model.tracker_model import Expense
 
 
 def test_validate_id_basic():
@@ -36,16 +34,16 @@ def test_validate_name():
     validator.validate_name("Hello")
 
 
-def test_available_storage():
-    validator.check_available_storage(4)
+# def test_available_storage():
+#     validator.check_available_storage(4)
 
 
-def test_check_presence_not_present():
-    assert not storage.check_presence(1)
+# def test_check_presence_not_present():
+#     assert not storage.check_presence(1)
 
 
-def test_check_presence_present():
-    expense1 = Expense
-    expense1.expense_id = 1
-    storage.add_item(expense1)
-    assert storage.check_presence(1)
+# def test_check_presence_present():
+#     expense1 = Expense
+#     expense1.expense_id = 1
+#     storage.add_item(expense1)
+#     assert storage.check_presence(1)
