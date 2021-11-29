@@ -11,3 +11,19 @@ class Expense(BaseModel):
     category: str
     description: Optional[str] = None
     expense_id: int
+    user_id: int
+
+
+class User(BaseModel):
+    user_id: int
+    name: str
+    gender: str
+    is_admin: bool
+    status: Optional[str] = None
+
+
+class Group(BaseModel):
+    group_id: int
+    name: str
+    creator_id: int
+    description: Optional[str] = None

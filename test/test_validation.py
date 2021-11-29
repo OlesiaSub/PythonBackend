@@ -17,21 +17,21 @@ def test_validate_id_negative_fail():
 
 @pytest.mark.xfail()
 def test_validate_name_numeric_fail():
-    validator.validate_name("5564")
+    validator.validate_expense_name("5564")
 
 
 @pytest.mark.xfail()
 def test_validate_name_empty_fail():
-    validator.validate_name("")
+    validator.validate_expense_name("")
 
 
 @pytest.mark.xfail()
 def test_validate_name_lowercase_fail():
-    validator.validate_name("hello")
+    validator.validate_expense_name("hello")
 
 
 def test_validate_name():
-    validator.validate_name("Hello")
+    validator.validate_expense_name("Hello")
 
 
 # def test_available_storage():

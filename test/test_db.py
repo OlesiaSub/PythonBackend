@@ -7,7 +7,7 @@ from fastapi.testclient import TestClient
 from database import db_models
 from database.database import Base
 from endpoints.endpoints import get_db
-from use_case.endpoints_logic import process_get, process_create_item
+from use_case.endpoints_logic import process_get_expense, process_create_expense
 from main import app
 from model.tracker_model import Expense
 
@@ -43,7 +43,7 @@ client = TestClient(app)
 def test_invalid_id():
     clear()
     with pytest.raises(HTTPException) as execinfo:
-        process_get(-1, Depends(get_db))
+        process_get_expense(-1, Depends(get_db))
     assert execinfo.value.status_code == 400
     assert execinfo.value.detail == "Id is invalid, must be >= 0"
 
@@ -53,7 +53,7 @@ def test_invalid_lowercase_name():
     ex = Expense(name="olesya", expenditure=30, date="2021-09-26T07:38:59.388Z",
                  category="ff", description="ss", expense_id=1)
     with pytest.raises(HTTPException) as execinfo:
-        process_create_item(ex, Depends(get_db()))
+        process_create_expense(ex, Depends(get_db()))
     assert execinfo.value.status_code == 400
     assert execinfo.value.detail == "Name must start with capital, must not be empty or numeric"
 
