@@ -9,7 +9,8 @@ def create_expense(db: Session, expense: tracker_model.Expense):
                          date=expense.date,
                          category=expense.category,
                          description=expense.description,
-                         expense_id=expense.expense_id)
+                         expense_id=expense.expense_id,
+                         user_id=expense.user_id)
     db.add(db_expense)
     db.commit()
     db.refresh(db_expense)
@@ -17,11 +18,11 @@ def create_expense(db: Session, expense: tracker_model.Expense):
 
 
 def create_user(db, user: tracker_model.User):
-    db_user = Group(user_id=user.user_id,
-                    name=user.name,
-                    gender=user.gender,
-                    is_admin=user.is_admin,
-                    status=user.status)
+    db_user = User(user_id=user.user_id,
+                   name=user.name,
+                   gender=user.gender,
+                   is_admin=user.is_admin,
+                   status=user.status)
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
@@ -39,20 +40,13 @@ def create_group(db, group: tracker_model.Group):
     return db_group
 
 
-def get_expense_by_id(db: Session, expense_id: int):
-    return db.query(Expense).filter(Expense.expense_id == expense_id).first()
-
-
-def get_expense_by_name(db: Session, name: str):
-    return db.query(Expense).filter(Expense.name == name).first()
-
-
-def get_expenses(db: Session, skip: int = 0, limit: int = 100):
-    return db.query(Expense).offset(skip).limit(limit).all()
+def get_user_expense_by_id(db: Session, expense_id: int, user_id: int):
+    return db.query(Expense).filter(Expense.expense_id == expense_id
+                                    and Expense.user_id == user_id).first()
 
 
 def get_user_expenses(db: Session, user_id: int, limit: int = 100):
-    return db.query(Expense).filter(Expense.user_id == user_id).limit(limit).all()
+    return db.query(Expense).filter(Expense.user_id == user_id).offset(0).limit(limit).all()
 
 
 def get_group_by_id(db: Session, group_id: int):

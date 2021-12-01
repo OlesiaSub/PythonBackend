@@ -5,8 +5,9 @@ from sqlalchemy.orm import Session
 
 from database import database, db_queries
 from model import tracker_model
-from model.tracker_model import Expense
-from use_case.endpoints_logic import process_get_expense_by_id, process_create_expense, process_get_group
+from model.tracker_model import Expense, User, Group
+from use_case.endpoints_logic import process_create_expense, process_get_group, \
+    process_create_user, process_get_user_expense_by_id, process_create_group
 
 router = APIRouter()
 
@@ -24,12 +25,22 @@ async def create_expense(expense: Expense, db: Session = Depends(get_db)):
     return process_create_expense(expense, db)
 
 
-@router.get("/expenses_tracker/{expense_id}")
-async def get_expense_by_id(expense_id: int, db: Session = Depends(get_db)):
-    return process_get_expense_by_id(expense_id, db)
+@router.post("/expenses/new_user")
+async def create_user(user: User, db: Session = Depends(get_db)):
+    return process_create_user(user, db)
 
 
-@router.get("/expenses/all", response_model=List[tracker_model.Expense])
+@router.post("/expenses/new_group")
+async def create_user(group: Group, db: Session = Depends(get_db)):
+    return process_create_group(group, db)
+
+
+@router.get("/user/{user_id}/expenses/{expense_id}")
+async def get_expense_by_id(user_id: int, expense_id: int, db: Session = Depends(get_db)):
+    return process_get_user_expense_by_id(user_id, expense_id, db)
+
+
+@router.get("/user/{user_id}/expenses", response_model=List[tracker_model.Expense])
 async def get_expenses_of_user(user_id: int, db: Session = Depends(get_db)):
     expenses = list(map(lambda expense: tracker_model.Expense(name=expense.name,
                                                               expenditure=expense.expenditure,

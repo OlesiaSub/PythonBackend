@@ -12,7 +12,8 @@ class Expense(Base):
     date = Column(DateTime)
     category = Column(String)
     description = Column(String)
-    user_id = Column(Integer, ForeignKey('users.id'))
+    # user_id = Column(Integer)
+    user_id = Column(Integer, ForeignKey('users.user_id'))
     # user_id = relationship("Child", back_populates="parent")
 
 
@@ -38,14 +39,15 @@ class Group(Base):
 class UserGroupRelations(Base):
     __tablename__ = "user_group_relations"
 
-    group_id = Column(Integer, ForeignKey('groups.id'))
-    user_id = Column(Integer, ForeignKey('users.id'))
+    relation_id = Column(Integer, primary_key=True, index=True)
+    group_id = Column(Integer, ForeignKey('groups.group_id'))
+    user_id = Column(Integer, ForeignKey('users.user_id'))
     user_is_admin = Column(Boolean, ForeignKey('users.is_admin'))
 
 
-# maybe не нужна
-class ExpenseGroupRelations(Base):
-    __tablename__ = "expense_group_relations"
-
-    group_id = Column(Integer, ForeignKey('groups.id'))
-    expense_id = Column(Integer, ForeignKey('expenses.id'))
+# # maybe не нужна
+# class ExpenseGroupRelations(Base):
+#     __tablename__ = "expense_group_relations"
+#
+#     group_id = Column(Integer, ForeignKey('groups.id'))
+#     expense_id = Column(Integer, ForeignKey('expenses.id'))
