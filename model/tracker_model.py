@@ -12,6 +12,7 @@ class Expense(BaseModel):
     description: Optional[str] = None
     expense_id: int
     user_id: int
+    group_id: Optional[int] = None
 
 
 class User(BaseModel):

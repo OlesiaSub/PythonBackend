@@ -1,3 +1,4 @@
+from array import array
 from typing import List
 
 from fastapi import APIRouter, Depends
@@ -31,8 +32,8 @@ async def create_user(user: User, db: Session = Depends(get_db)):
 
 
 @router.post("/expenses/new_group")
-async def create_group(group: Group, db: Session = Depends(get_db)):
-    return process_create_group(group, db)
+async def create_group(group: Group, participants_ids: list[int], db: Session = Depends(get_db)):
+    return process_create_group(group, participants_ids, db)
 
 
 @router.get("/user/{user_id}/expenses/{expense_id}")
@@ -48,11 +49,27 @@ async def get_expenses_of_user(user_id: int, db: Session = Depends(get_db)):
                                                               category=expense.category,
                                                               description=expense.description,
                                                               expense_id=expense.expense_id,
-                                                              user_id=expense.user_id),
+                                                              user_id=expense.user_id,
+                                                              group_id=Expense.group_id),
                         db_queries.get_user_expenses(db, user_id=user_id, limit=100)))
     return expenses
 
 
-@router.get("/expenses_tracker/{group_id}")
+@router.get("/groups/{group_id}")
 async def get_group_info(group_id, db: Session = Depends(get_db)):
     return process_get_group(group_id, db)
+
+
+@router.get("/groups/{group_id}/expenses")
+async def get_group_expenses(group_id, db: Session = Depends(get_db)):
+    return db_queries.get_group_expenses(db, group_id)
+
+
+@router.get("/groups/{group_id}/{user_id}/expenses")
+async def get_group_expenses_of_user(group_id, user_id, db: Session = Depends(get_db)):
+    return db_queries.get_group_expenses_of_user(db, group_id, user_id)
+
+
+@router.get("/user/{user_id}}/groups")
+async def get_groups_of_user(user_id, db: Session = Depends(get_db)):
+    return db_queries.get_groups_of_user(db, user_id)

@@ -1,3 +1,5 @@
+from array import array
+
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
@@ -36,7 +38,8 @@ def process_get_group(group_id: int, db: Session):
     return db_group
 
 
-def process_create_group(group: Group, db: Session):
+def process_create_group(group: Group, participants_ids: list[int], db: Session):
     validate_group(group, db)
-    # todo: create relations
-    return db_queries.create_group(db, group=group)
+    for p in participants_ids:
+        validate_id(p)
+    return db_queries.create_group(db, group=group, participants=participants_ids)
