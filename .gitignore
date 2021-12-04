@@ -1,2 +1,4 @@
 .idea*
 *__pycache__*
+*sql_app.db
+*test.db
