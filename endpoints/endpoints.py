@@ -70,6 +70,6 @@ async def get_group_expenses_of_user(group_id, user_id, db: Session = Depends(ge
     return db_queries.get_group_expenses_of_user(db, group_id, user_id)
 
 
-@router.get("/user/{user_id}}/groups")
+@router.get("/user/{user_id}/groups")
 async def get_groups_of_user(user_id, db: Session = Depends(get_db)):
     return db_queries.get_groups_of_user(db, user_id)

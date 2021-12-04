@@ -88,7 +88,7 @@ def get_group_expenses(db: Session, group_id: int, limit: int = 100):
 
 
 def get_group_expenses_of_user(db: Session, group_id: int, user_id: int, limit: int = 100):
-    return db.query(Expense).filter(Expense.group_id == group_id and Expense.user_id == user_id).limit(limit).all()
+    return db.query(Expense).filter(Expense.group_id == group_id).filter(Expense.user_id == user_id).limit(limit).all()
 
 
 def get_user_from_group(db: Session, group_id: int, limit: int = 100):
@@ -96,4 +96,5 @@ def get_user_from_group(db: Session, group_id: int, limit: int = 100):
 
 
 def get_groups_of_user(db: Session, user_id: int, limit: int = 100):
-    return db.query(Group).filter(UserGroupRelations.user_id == Group.creator_id == user_id).limit(limit).all()
+    return db.query(Group).filter(UserGroupRelations.user_id == user_id).filter(Group.creator_id == user_id)\
+        .limit(limit).all()
