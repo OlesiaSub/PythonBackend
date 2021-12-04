@@ -2,7 +2,7 @@ from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
 from database import db_queries
-from expense_validation.validator import validate_id, validate_group
+from expense_validation.validator import validate_id, validate_group, validate_expense, validate_user
 from model.tracker_model import Expense, Group, User
 
 
@@ -18,13 +18,12 @@ def process_get_user_expense_by_id(user_id: int, expense_id: int, db: Session):
 
 
 def process_create_expense(expense: Expense, db: Session):
-    # todo:
-    #  validate expense
-    # validate_expense(expense, db)
+    validate_expense(expense, db)
     return db_queries.create_expense(db=db, expense=expense)
 
 
 def process_create_user(user: User, db: Session):
+    validate_user(user, db)
     return db_queries.create_user(db=db, user=user)
 
 
@@ -37,6 +36,7 @@ def process_get_group(group_id: int, db: Session):
     return db_group
 
 
-def process_create_group(group: Group, participants_ids, db: Session):
+def process_create_group(group: Group, db: Session):
     validate_group(group, db)
+    # todo: create relations
     return db_queries.create_group(db, group=group)

@@ -31,7 +31,7 @@ async def create_user(user: User, db: Session = Depends(get_db)):
 
 
 @router.post("/expenses/new_group")
-async def create_user(group: Group, db: Session = Depends(get_db)):
+async def create_group(group: Group, db: Session = Depends(get_db)):
     return process_create_group(group, db)
 
 
