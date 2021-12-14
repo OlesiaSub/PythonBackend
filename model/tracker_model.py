@@ -19,8 +19,8 @@ class User(BaseModel):
     user_id: int
     name: str
     gender: str
-    is_admin: bool
     status: Optional[str] = None
+    hashed_password: str
 
 
 class Group(BaseModel):
@@ -28,3 +28,12 @@ class Group(BaseModel):
     name: str
     creator_id: int
     description: Optional[str] = None
+
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+
+
+class TokenData(BaseModel):
+    username: Optional[str] = None

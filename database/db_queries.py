@@ -4,6 +4,7 @@ from fastapi import HTTPException
 from sqlalchemy.orm import Session
 from database.db_models import Expense, User, Group, UserGroupRelations
 from model import tracker_model
+from use_case.auth_logic import pwd_context
 
 relation_id = 0
 
@@ -23,12 +24,17 @@ def create_expense(db: Session, expense: tracker_model.Expense):
     return db_expense
 
 
+def get_password_hash(password):
+    return pwd_context.hash(password)
+
+
 def create_user(db, user: tracker_model.User):
+    hashed_password = get_password_hash(user.hashed_password)
     db_user = User(user_id=user.user_id,
                    name=user.name,
                    gender=user.gender,
-                   is_admin=user.is_admin,
-                   status=user.status)
+                   status=user.status,
+                   hashed_password=hashed_password)
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
@@ -46,11 +52,10 @@ def create_group(db, group: tracker_model.Group, participants: list[int]):
         if get_user_by_id(db, p) is None:
             raise HTTPException(status_code=404, detail="The user with id" + str(p) + "does not exist")
 
-        is_admin = get_user_by_id(db, p).is_admin
-        db_relation = UserGroupRelations(relation_id=relation_id,
-                                         group_id=group.group_id,
+        # is_admin = get_user_by_id(db, p).is_admin
+        db_relation = UserGroupRelations(group_id=group.group_id,
                                          user_id=p,
-                                         user_is_admin=is_admin)
+                                         user_is_admin=True)
         db.add(db_relation)
         db.commit()
         db.refresh(db_relation)
@@ -95,6 +100,6 @@ def get_user_from_group(db: Session, group_id: int, limit: int = 100):
     return db.query(UserGroupRelations).filter(UserGroupRelations.group_id == group_id).limit(limit).all()
 
 
-def get_groups_of_user(db: Session, user_id: int, limit: int = 100):
+def get_groups_created_by_user(db: Session, user_id: int, limit: int = 100):
     return db.query(Group).filter(UserGroupRelations.user_id == user_id).filter(Group.creator_id == user_id)\
         .limit(limit).all()

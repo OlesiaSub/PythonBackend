@@ -7,7 +7,7 @@ class Expense(Base):
     __tablename__ = "expenses"
 
     expense_id = Column(Integer, primary_key=True, index=True)
-    name = Column(String, unique=True, index=True)
+    name = Column(String)
     expenditure = Column(Integer)
     date = Column(DateTime)
     category = Column(String)
@@ -22,8 +22,8 @@ class User(Base):
     user_id = Column(Integer, primary_key=True, index=True)
     name = Column(String, unique=True)
     gender = Column(String)
-    is_admin = Column(Boolean)
     status = Column(String)
+    hashed_password = Column(String)
 
 
 class Group(Base):
@@ -38,7 +38,6 @@ class Group(Base):
 class UserGroupRelations(Base):
     __tablename__ = "user_group_relations"
 
-    relation_id = Column(Integer, primary_key=True, index=True)
-    group_id = Column(Integer, ForeignKey('groups.group_id'))
-    user_id = Column(Integer, ForeignKey('users.user_id'))
-    user_is_admin = Column(Boolean, ForeignKey('users.is_admin'))
+    group_id = Column(Integer, ForeignKey('groups.group_id'), primary_key=True)
+    user_id = Column(Integer, ForeignKey('users.user_id'), primary_key=True)
+    user_is_admin = Column(Boolean)

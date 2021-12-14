@@ -1,5 +1,3 @@
-from array import array
-
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
@@ -24,7 +22,7 @@ def process_create_expense(expense: Expense, db: Session):
     return db_queries.create_expense(db=db, expense=expense)
 
 
-def process_create_user(user: User, db: Session):
+def process_register_user(user: User, db: Session):
     validate_user(user, db)
     return db_queries.create_user(db=db, user=user)
 

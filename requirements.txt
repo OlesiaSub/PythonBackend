@@ -4,3 +4,5 @@ pytest~=6.2.5
 graphene~=2.1.9
 starlette~=0.14.2
 SQLAlchemy~=1.4.25
+passlib~=1.7.4
+jose~=1.0.0

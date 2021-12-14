@@ -69,12 +69,12 @@ def validate_user_gender(gender: str):
         return True
 
 
-def validate_is_admin(user_id: int, db: Session):
-    if not db_queries.get_user_by_id(db, user_id).is_admin:
-        raise HTTPException(status_code=400,
-                            detail="Only admins can create groups")
-    else:
-        return True
+# def validate_is_admin(user_id: int, db: Session):
+#     if not db_queries.get_user_by_id(db, user_id).is_admin:
+#         raise HTTPException(status_code=400,
+#                             detail="Only admins can create groups")
+#     else:
+#         return True
 
 
 def validate_expense(expense: Expense, db: Session):
@@ -88,5 +88,5 @@ def validate_user(user: User, db: Session):
 
 
 def validate_group(group: Group, db: Session):
-    return validate_id(group.group_id) and validate_is_admin(group.creator_id, db) and \
+    return validate_id(group.group_id) and \
            check_available_storage_group_id(group.group_id, db)
