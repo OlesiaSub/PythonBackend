@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 from database import db_queries
 from expense_validation.validator import validate_id, validate_group, validate_expense, validate_user
 from model.tracker_model import Expense, Group, User
+from use_case.auth_logic import get_current_user
 
 
 def process_get_user_expense_by_id(user_id: int, expense_id: int, db: Session):
@@ -41,3 +42,9 @@ def process_create_group(group: Group, participants_ids: list[int], db: Session)
     for p in participants_ids:
         validate_id(p)
     return db_queries.create_group(db, group=group, participants=participants_ids)
+
+
+def process_get_group_expenses(group_id: int, db: Session, current_user: User):
+    if db_queries.get_group_by_id(db, group_id).creator_id != current_user.user_id:
+        raise HTTPException(status_code=404, detail="Current user is not this group's admin")
+    return db_queries.get_group_expenses(db, group_id)

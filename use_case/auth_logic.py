@@ -10,7 +10,7 @@ from starlette import status
 
 from database import db_queries
 from database.database import get_db
-from model.tracker_model import TokenData
+from model.tracker_model import TokenData, User
 
 SECRET_KEY = "56be0006defb37836ed68af0ed86c84fa581689bd149bd5309cb1b429ecf64e7"
 ALGORITHM = "HS256"
@@ -64,4 +64,8 @@ async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = De
             detail="Could not get queried user",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    return user
+    return User(user_id=user.user_id,
+                name=user.name,
+                gender=user.gender,
+                status=user.status,
+                hashed_password=user.hashed_password)

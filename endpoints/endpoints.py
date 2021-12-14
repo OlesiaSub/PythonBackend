@@ -12,7 +12,7 @@ from model import tracker_model
 from model.tracker_model import Expense, User, Group, Token
 from use_case.auth_logic import authenticate_user, ACCESS_TOKEN_EXPIRE_MINUTES, generate_access_token, get_current_user
 from use_case.endpoints_logic import process_create_expense, process_get_group, \
-    process_get_user_expense_by_id, process_create_group, process_register_user
+    process_get_user_expense_by_id, process_create_group, process_register_user, process_get_group_expenses
 
 router = APIRouter()
 
@@ -57,8 +57,8 @@ async def get_group_info(group_id, db: Session = Depends(get_db)):
 
 
 @router.get("/groups/{group_id}/expenses")
-async def get_group_expenses(group_id, db: Session = Depends(get_db)):
-    return db_queries.get_group_expenses(db, group_id)
+async def get_group_expenses(group_id, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    return process_get_group_expenses(group_id, db, current_user)
 
 
 @router.get("/groups/{group_id}/{user_id}/expenses")
@@ -71,7 +71,7 @@ async def get_groups_created_by_user(user_id, db: Session = Depends(get_db)):
     return db_queries.get_groups_created_by_user(db, user_id)
 
 
-@router.post("/get_token", response_model=Token)
+@router.post("/token", response_model=Token)
 async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
     user = authenticate_user(form_data.username, form_data.password, db)
     if not user:
