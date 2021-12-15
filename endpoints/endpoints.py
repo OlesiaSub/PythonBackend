@@ -12,7 +12,7 @@ from use_case.auth_logic import get_current_user, \
     process_get_access_token
 from use_case.endpoints_logic import process_create_expense, process_get_group, \
     process_get_user_expense_by_id, process_create_group, process_register_user, process_get_group_expenses, \
-    process_get_user_expenses
+    process_get_user_expenses, process_get_group_expenses_by_category
 
 router = APIRouter()
 
@@ -41,9 +41,8 @@ async def get_expense_by_id(expense_id: int, db: Session = Depends(get_db),
 
 
 @router.get("/user/{user_id}/expenses", response_model=List[tracker_model.Expense])
-async def get_expenses_of_user(user_id: int, db: Session = Depends(get_db),
-                               current_user: User = Depends(get_current_user)):
-    return process_get_user_expenses(user_id, db, current_user)
+async def get_expenses_of_user(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    return process_get_user_expenses(db, current_user)
 
 
 @router.get("/groups/{group_id}")
@@ -67,9 +66,9 @@ async def get_group_expenses_of_user(group_id, user_id, db: Session = Depends(ge
 @router.get("/user/{user_id}/groups")
 async def get_groups_created_by_user(user_id, db: Session = Depends(get_db),
                                      current_user: User = Depends(get_current_user)):
-    if current_user.user_id != user_id:
+    if int(current_user.user_id) != int(user_id):
         raise HTTPException(status_code=404, detail="You can not look at other users' groups")
-    return db_queries.get_groups_created_by_user(db, user_id)
+    return db_queries.get_groups_created_by_user(db, int(user_id))
 
 
 @router.post("/token", response_model=Token)
@@ -81,3 +80,9 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
 @router.get("/users/data/", response_model=User)
 async def get_user_data(current_user: User = Depends(get_current_user)):
     return current_user
+
+
+@router.get("/groups_expenses/{group_id}/{category}")
+async def get_group_expenses_by_category(group_id, category, db: Session = Depends(get_db),
+                                         current_user: User = Depends(get_current_user)):
+    return process_get_group_expenses_by_category(group_id, category, db, current_user)

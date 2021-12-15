@@ -2,7 +2,7 @@ from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
 from database import db_queries
-from expense_validation.validator import validate_id, validate_group, validate_expense, validate_user
+from expense_validation.validator import validate_id, validate_group, validate_expense, validate_user, validate_category
 from model.tracker_model import Expense, Group, User
 
 
@@ -55,9 +55,7 @@ def process_get_group_expenses(group_id: int, db: Session, current_user: User):
     return db_queries.get_group_expenses(db, group_id)
 
 
-def process_get_user_expenses(user_id: int, db: Session, current_user: User):
-    if current_user.user_id != user_id:
-        raise HTTPException(status_code=404, detail="You can not look at other users' expenses")
+def process_get_user_expenses(db: Session, current_user: User):
     expenses = list(map(lambda expense: Expense(name=expense.name,
                                                 expenditure=expense.expenditure,
                                                 date=expense.date,
@@ -65,6 +63,13 @@ def process_get_user_expenses(user_id: int, db: Session, current_user: User):
                                                 description=expense.description,
                                                 expense_id=expense.expense_id,
                                                 user_id=expense.user_id,
-                                                group_id=Expense.group_id),
-                        db_queries.get_user_expenses(db, user_id=user_id, limit=100)))
+                                                group_id=expense.group_id),
+                        db_queries.get_user_expenses(db, user_id=current_user.user_id, limit=100)))
     return expenses
+
+
+def process_get_group_expenses_by_category(group_id, category, db: Session, current_user: User):
+    if db_queries.get_group_by_id(db, group_id).creator_id != current_user.user_id:
+        raise HTTPException(status_code=404, detail="Current user is not this group's admin")
+    validate_category(category)
+    return db_queries.get_group_expenses_by_category(db, group_id, category)

@@ -6,6 +6,8 @@ from sqlalchemy.orm import Session
 from database import db_queries
 from model.tracker_model import Expense, Group, User
 
+categories = {"Food", "Clothes", "Transport", "Medical", "Leisure", "Other"}
+
 
 def check_expense_presence(expense_id: int, user_id: int, db: Session):
     return db_queries.get_user_expense_by_id(db, expense_id, user_id)
@@ -69,9 +71,18 @@ def validate_user_gender(gender: str):
         return True
 
 
+def validate_category(category: str):
+    if category not in categories:
+        raise HTTPException(status_code=400,
+                            detail="Invalid category.\n List of available categories: " + str(categories))
+    else:
+        return True
+
+
 def validate_expense(expense: Expense, db: Session):
     return validate_id(expense.expense_id) and validate_expense_name(expense.name) \
-           and check_available_storage_expense_id(expense.expense_id, expense.user_id, db)
+           and check_available_storage_expense_id(expense.expense_id, expense.user_id, db) \
+           and validate_category(expense.category)
 
 
 def validate_user(user: User, db: Session):
