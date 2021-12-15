@@ -101,5 +101,5 @@ def get_user_from_group(db: Session, group_id: int, limit: int = 100):
 
 
 def get_groups_created_by_user(db: Session, user_id: int, limit: int = 100):
-    return db.query(Group).filter(UserGroupRelations.user_id == user_id).filter(Group.creator_id == user_id)\
+    return db.query(Group).filter(UserGroupRelations.user_id == user_id).filter(Group.creator_id == user_id) \
         .limit(limit).all()
